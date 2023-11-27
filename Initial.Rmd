@@ -4,6 +4,44 @@ output: html_notebook
 ---
 
 ```{r}
-plot(cars)
+library(ggplot2)
+library(forecast)
+```
+
+
+```{r}
+housing_data <- read.csv('CSUSHPISA.csv')
+```
+
+```{r}
+housing_data$DATE <- as.Date(housing_data$DATE, format="%Y-%m-%d")
+
+# Check for missing values in the CSUSHPISA column
+print(sum(is.na(housing_data$CSUSHPISA)))
+
+# Ensure the data is sorted chronologically
+housing_data <- housing_data[order(housing_data$DATE), ]
+```
+
+```{r}
+ggplot(housing_data, aes(x = DATE, y = CSUSHPISA)) +
+  geom_line(color = "blue") +
+  theme_minimal() +
+  labs(title = "S&P/Case-Shiller U.S. National Home Price Index Over Time",
+       x = "Year",
+       y = "CSUSHPISA Index") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+```{r}
+
+decomp <- decompose(ts(housing_data$CSUSHPISA, frequency = 12), type = "additive")
+
+# Plotting the decomposed components
+plot(decomp)
+
+decomp <- decompose(ts(housing_data$CSUSHPISA, frequency = 12), type = "multiplicative")
+
+# Plotting the decomposed components
+plot(decomp)
 ```
 
